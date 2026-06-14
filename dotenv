@@ -1,0 +1,4 @@
+require('dotenv').config();
+const apiKey = process.env.GEMINI_API_KEY;
+
+// Use the apiKey variable in your API calls
