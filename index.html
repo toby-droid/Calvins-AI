@@ -37,19 +37,22 @@
     </div>
 
     <div id="settings-overlay" class="hidden absolute top-20 left-20 w-1/2 bg-black border border-orange-600 p-6 z-50">
-        <h2 class="mb-4 font-bold border-b border-orange-600 uppercase text-xs">System Calibration</h2>
-        <div class="space-y-4">
-            <div>
-                <label class="block text-xs uppercase">Crt Monitor Noise</label>
-                <select id="setting-crt" class="bg-black border border-orange-600 w-full p-2 mt-1 text-xs">
-                    <option value="on">Active Shader</option>
-                    <option value="off">Off</option>
-                </select>
-            </div>
-            <button onclick="applySettings()" class="w-full border border-orange-600 py-2 mt-4 hover:bg-orange-900 uppercase text-xs tracking-widest">Save System Changes</button>
+    <h2 class="mb-4 font-bold border-b border-orange-600 uppercase text-xs">System Calibration</h2>
+    <div class="space-y-4">
+        <div>
+            <label class="block text-xs uppercase">Gemini API Key</label>
+            <input id="setting-key" type="password" placeholder="Paste AIza... key here" class="bg-black border border-orange-600 w-full p-2 mt-1 text-xs text-orange-400 outline-none">
         </div>
+        <div>
+            <label class="block text-xs uppercase">CRT Monitor Noise</label>
+            <select id="setting-crt" class="bg-black border border-orange-600 w-full p-2 mt-1 text-xs text-orange-400 outline-none">
+                <option value="on">Active Shader</option>
+                <option value="off">Off</option>
+            </select>
+        </div>
+        <button onclick="applySettings()" class="w-full border border-orange-600 py-2 mt-4 hover:bg-orange-900 uppercase text-xs tracking-widest">Save System Changes</button>
     </div>
-
+</div>
 <script>
     // 🛠️ PASTE YOUR KEY LOCALLY BETWEEN THE QUOTES BELOW
     const API_KEY = "AIzaSyCwy-9tTwHw4hBIdD0DmKmrHBDg5Ba9oF4"; 
