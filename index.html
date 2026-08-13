@@ -52,7 +52,7 @@
 
 <script>
     // 🛠️ PASTE YOUR KEY LOCALLY BETWEEN THE QUOTES BELOW
-    const API_KEY = "PASTE_YOUR_API_KEY_HERE"; 
+    const API_KEY = "AIzaSyCwy-9tTwHw4hBIdD0DmKmrHBDg5Ba9oF4"; 
     
     const chatWindow = document.getElementById('chat-window');
     const userInput = document.getElementById('user-input');
@@ -67,7 +67,7 @@
     async function callGemini(prompt) {
         chatWindow.innerHTML += `<div><span class="text-orange-600 italic text-xs uppercase">[System: Querying Logic Module...]</span></div>`;
         
-        if (!API_KEY || API_KEY.trim() === "" || API_KEY === "PASTE_YOUR_API_KEY_HERE") {
+        if (!API_KEY || API_KEY.trim() === "" || API_KEY === "AIzaSyCwy-9tTwHw4hBIdD0DmKmrHBDg5Ba9oF4") {
             chatWindow.innerHTML += `<div><span class="text-red-500 font-bold uppercase text-xs">System Error: API Key missing or unconfigured in code.</span></div>`;
             chatWindow.scrollTop = chatWindow.scrollHeight;
             return;
