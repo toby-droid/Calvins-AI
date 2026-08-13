@@ -11,7 +11,7 @@
         .crt-overlay { pointer-events: none; position: fixed; top:0; left:0; width:100%; height:100%; background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.25) 50%), linear-gradient(90deg, rgba(255,0,0,0.06), rgba(0,255,0,0.02), rgba(0,0,255,0.06)); background-size: 100% 4px, 3px 100%; opacity: 0.2; }
     </style>
 </head>
-<body class="h-screen p-4 flex flex-col overflow-hidden">
+<body class="h-screen p-4 flex flex-col overflow-hidden relative">
     <div id="crt-shader" class="crt-overlay"></div>
 
     <header class="flex justify-between items-center mb-2 terminal-border p-2">
@@ -36,49 +36,66 @@
         <button id="send-btn" class="border border-orange-600 px-6 py-2 hover:bg-orange-900 transition uppercase text-xs tracking-widest">Send</button>
     </div>
 
-    <div id="settings-overlay" class="hidden absolute top-20 left-20 w-1/2 bg-black border border-orange-600 p-6 z-50">
-    <h2 class="mb-4 font-bold border-b border-orange-600 uppercase text-xs">System Calibration</h2>
-    <div class="space-y-4">
-        <div>
-            <label class="block text-xs uppercase">Gemini API Key</label>
-            <input id="setting-key" type="password" placeholder="Paste AIza... key here" class="bg-black border border-orange-600 w-full p-2 mt-1 text-xs text-orange-400 outline-none">
+    <!-- SETTINGS OVERLAY -->
+    <div id="settings-overlay" class="hidden absolute top-20 left-1/2 -translate-x-1/2 w-11/12 max-w-md bg-black border border-orange-600 p-6 z-50 shadow-lg">
+        <h2 class="mb-4 font-bold border-b border-orange-600 uppercase text-xs pb-1">System Calibration</h2>
+        <div class="space-y-4">
+            <div>
+                <label class="block text-xs uppercase mb-1">Gemini API Key</label>
+                <input id="setting-key" type="password" placeholder="Paste AIza... key here" class="bg-black border border-orange-600 w-full p-2 text-xs text-orange-400 outline-none focus:border-orange-400">
+            </div>
+            <div>
+                <label class="block text-xs uppercase mb-1">CRT Monitor Noise</label>
+                <select id="setting-crt" class="bg-black border border-orange-600 w-full p-2 text-xs text-orange-400 outline-none">
+                    <option value="on">Active Shader</option>
+                    <option value="off">Off</option>
+                </select>
+            </div>
+            <button onclick="applySettings()" class="w-full border border-orange-600 py-2 mt-4 hover:bg-orange-900 uppercase text-xs tracking-widest">Save System Changes</button>
         </div>
-        <div>
-            <label class="block text-xs uppercase">CRT Monitor Noise</label>
-            <select id="setting-crt" class="bg-black border border-orange-600 w-full p-2 mt-1 text-xs text-orange-400 outline-none">
-                <option value="on">Active Shader</option>
-                <option value="off">Off</option>
-            </select>
-        </div>
-        <button onclick="applySettings()" class="w-full border border-orange-600 py-2 mt-4 hover:bg-orange-900 uppercase text-xs tracking-widest">Save System Changes</button>
     </div>
-</div>
+
 <script>
-    // 🛠️ PASTE YOUR KEY LOCALLY BETWEEN THE QUOTES BELOW
-    const API_KEY = "AIzaSyCwy-9tTwHw4hBIdD0DmKmrHBDg5Ba9oF4"; 
-    
     const chatWindow = document.getElementById('chat-window');
     const userInput = document.getElementById('user-input');
+    const settingKeyInput = document.getElementById('setting-key');
     
-    function toggleSettings() { document.getElementById('settings-overlay').classList.toggle('hidden'); }
+    // Retrieve key from local storage on startup
+    let apiKey = localStorage.getItem('calvin_api_key') || "";
+    if (apiKey) {
+        settingKeyInput.value = apiKey;
+    }
+
+    function toggleSettings() { 
+        document.getElementById('settings-overlay').classList.toggle('hidden'); 
+    }
+
     function applySettings() {
         const crt = document.getElementById('setting-crt').value;
         document.getElementById('crt-shader').style.display = (crt === 'on' ? 'block' : 'none');
+        
+        // Update local variable and browser storage
+        apiKey = settingKeyInput.value.trim();
+        localStorage.setItem('calvin_api_key', apiKey);
+
         toggleSettings();
+
+        chatWindow.innerHTML += `<div><span class="text-orange-600 italic text-xs uppercase">[System: Calibration updated & saved.]</span></div>`;
+        chatWindow.scrollTop = chatWindow.scrollHeight;
     }
 
     async function callGemini(prompt) {
         chatWindow.innerHTML += `<div><span class="text-orange-600 italic text-xs uppercase">[System: Querying Logic Module...]</span></div>`;
+        chatWindow.scrollTop = chatWindow.scrollHeight;
         
-        if (!API_KEY || API_KEY.trim() === "" || API_KEY === "AIzaSyCwy-9tTwHw4hBIdD0DmKmrHBDg5Ba9oF4") {
-            chatWindow.innerHTML += `<div><span class="text-red-500 font-bold uppercase text-xs">System Error: API Key missing or unconfigured in code.</span></div>`;
+        if (!apiKey) {
+            chatWindow.innerHTML += `<div><span class="text-red-500 font-bold uppercase text-xs">System Error: API Key missing. Click SETTINGS to configure.</span></div>`;
             chatWindow.scrollTop = chatWindow.scrollHeight;
             return;
         }
 
         try {
-            // Standard Gemini 2.5 Flash endpoint
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`, {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
